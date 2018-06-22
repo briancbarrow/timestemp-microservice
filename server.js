@@ -15,7 +15,8 @@ app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
 app.get("/", function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+  let newDate = new Date();
+  res.json({unix: newDate.getTime(), utc: newDate.toUTCString()});
 });
 
 
@@ -24,9 +25,17 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+app.get("/api/timestamp/:date_string?", function (req, res) {
+  //let myDate = req.params.date_string;
+  let myDate = new Date(req.params.date_string);
+  if(myDate.toUTCString() !== "Invalid Date") {
+    res.json({unix: myDate.getTime(), utc: myDate.toUTCString()});
+  } else {
+     res.json({error: "Invalid Date"});
+  }
+});
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+var listener = app.listen(process.env.PORT || 8080, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
